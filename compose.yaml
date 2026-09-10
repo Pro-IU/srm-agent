@@ -1,0 +1,40 @@
+name: srm-agent-demo
+
+services:
+  mysql:
+    image: mysql:8.0.44
+    pull_policy: never
+    container_name: srm-agent-local-mysql
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${SRM_DEMO_MYSQL_PORT:-13306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SRM_DEMO_DB_ROOT_PASSWORD:?generated in .runtime/demo.env}
+      MYSQL_DATABASE: srm_agent_demo
+      MYSQL_USER: srm_agent_demo_app
+      MYSQL_PASSWORD: ${SRM_DEMO_DB_APP_PASSWORD:?generated in .runtime/demo.env}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+    volumes:
+      - srm-agent-local-mysql-data:/var/lib/mysql
+      - ./src/main/resources/db/srm/001_srm_schema.sql:/docker-entrypoint-initdb.d/001_srm_schema.sql:ro
+      - ./src/main/resources/db/srm/002_srm_demo_data.sql:/docker-entrypoint-initdb.d/002_srm_demo_data.sql:ro
+      - ./src/main/resources/db/srm/003_srm_step3_migration.sql:/docker-entrypoint-initdb.d/003_srm_step3_migration.sql:ro
+    networks:
+      - srm-agent-demo
+
+volumes:
+  srm-agent-local-mysql-data:
+    name: srm-agent-local-mysql-data
+
+networks:
+  srm-agent-demo:
+    name: srm-agent-demo-network

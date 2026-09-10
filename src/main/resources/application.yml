@@ -1,0 +1,49 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: srm-agent
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+
+mybatis-plus:
+  type-handlers-package: io.github.oudexin.srm.agent.config
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+  global-config:
+    db-config:
+      id-type: input
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    io.github.oudexin.srm.agent: INFO
+    io.agentscope.core: INFO
+
+# Demo is deterministic and needs neither a model key nor an external service.
+# LIVE is opt-in and fails safely until all model values are explicitly configured.
+srm:
+  runtime:
+    mode: ${SRM_RUNTIME_MODE:DEMO}
+    provider: ${SRM_LIVE_MODEL_PROVIDER:dashscope}
+    model: ${SRM_LIVE_MODEL:}
+    base-url: ${SRM_LIVE_MODEL_BASE_URL:}
+    api-key: ${SRM_LIVE_MODEL_API_KEY:}
+    timeout-seconds: ${SRM_LIVE_TIMEOUT_SECONDS:15}
+    max-message-length: ${SRM_MAX_MESSAGE_LENGTH:2000}
+  knowledge-engine:
+    enabled: ${SRM_KNOWLEDGE_ENGINE_ENABLED:false}
+    base-url: ${SRM_KNOWLEDGE_ENGINE_BASE_URL:http://localhost:8009}
+    connect-timeout-millis: ${SRM_KNOWLEDGE_ENGINE_CONNECT_TIMEOUT_MS:1000}
+    read-timeout-millis: ${SRM_KNOWLEDGE_ENGINE_READ_TIMEOUT_MS:8000}
+    max-results: ${SRM_KNOWLEDGE_ENGINE_MAX_RESULTS:5}
+    max-content-length: ${SRM_KNOWLEDGE_ENGINE_MAX_CONTENT_LENGTH:1200}
+    max-attempts: ${SRM_KNOWLEDGE_ENGINE_MAX_ATTEMPTS:1}

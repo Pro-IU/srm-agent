@@ -1,1 +1,22 @@
-# Initializing repository; full project follows in the next commit.
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# Build output
+target/
+frontend/node_modules/
+frontend/dist/
+
+# IDE and OS state
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Logs
+*.log
+
+# Local demo runtime state (generated credentials, PID files and logs)
+.runtime/
+.vite/
